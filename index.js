@@ -12,9 +12,9 @@ const SECRET_KEY = process.env.WEBHOOK_BRIDGE_SECRET_KEY;
 
 // Middleware to check the secret key
 app.use((req, res, next) => {
-	const authHeader = req.headers.authorization;
-	if (authHeader) {
-		const token = authHeader.split(' ')[1];
+	const secretAuthHeader = req.headers.secret;
+	if (secretAuthHeader) {
+		const token = secretAuthHeader.split(' ')[1];
 		if (token === SECRET_KEY) {
 			next();
 			return;
@@ -29,14 +29,24 @@ app.post('/webhook/:id/:token', async (req, res) => {
 	const discordWebhookToken = req.params.token;
 	const discordWebhookUrl = `https://discord.com/api/webhooks/${discordWebhookId}/${discordWebhookToken}`;
 
+	// Extract the Authorization header from the incoming request
+	const authHeader = req.headers.authorization;
+
+	const headers = {};
+	if (authHeader) {
+			// Include the Authorization header in the request to Discord
+			headers['Authorization'] = authHeader;
+	}
+
 	try {
-		await axios.post(discordWebhookUrl, req.body);
-		res.status(200).send('Webhook sent to Discord successfully');
+			await axios.post(discordWebhookUrl, req.body, { headers });
+			res.status(200).send('Webhook sent to Discord successfully');
 	} catch (error) {
-		console.error('Error sending to Discord:', error);
-		res.status(500).send('Error sending webhook to Discord');
+			console.error('Error sending to Discord:', error);
+			res.status(500).send('Error sending webhook to Discord');
 	}
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
