@@ -34,16 +34,16 @@ app.post('/webhook/:id/:token', async (req, res) => {
 
 	const headers = {};
 	if (authHeader) {
-			// Include the Authorization header in the request to Discord
-			headers['Authorization'] = authHeader;
+		// Include the Authorization header in the request to Discord
+		headers['Authorization'] = authHeader;
 	}
 
 	try {
-			await axios.post(discordWebhookUrl, req.body, { headers });
-			res.status(200).send('Webhook sent to Discord successfully');
+		await axios.post(discordWebhookUrl, req.body, { headers });
+		res.status(200).send('Webhook sent to Discord successfully');
 	} catch (error) {
-			console.error('Error sending to Discord:', error);
-			res.status(500).send('Error sending webhook to Discord');
+		console.error('Error sending to Discord:', error);
+		res.status(500).send('Error sending webhook to Discord');
 	}
 });
 
