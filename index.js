@@ -42,8 +42,22 @@ app.post('/webhook/:id/:token', async (req, res) => {
 		await axios.post(discordWebhookUrl, req.body, { headers });
 		res.status(200).send('Webhook sent to Discord successfully');
 	} catch (error) {
-		console.error('Error sending to Discord:', error);
-		res.status(500).send('Error sending webhook to Discord');
+		if (error.response) {
+			// The request was made and the server responded with a status code
+			// that falls out of the range of 2xx
+			console.error('Error data:', error.response.data);
+			console.error('Error status:', error.response.status);
+			console.error('Error headers:', error.response.headers);
+			res.status(error.response.status).send(error.response.data);
+		} else if (error.request) {
+			// The request was made but no response was received
+			console.error('Error request:', error.request);
+			res.status(500).send('No response received from Discord');
+		} else {
+			// Something happened in setting up the request that triggered an Error
+			console.error('Error message:', error.message);
+			res.status(500).send('Error: ' + error.message);
+		}
 	}
 });
 
