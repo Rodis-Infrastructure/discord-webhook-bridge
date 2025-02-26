@@ -11,7 +11,7 @@
   "author": "Madison Sweigert",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.8.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2"
   }
